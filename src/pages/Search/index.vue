@@ -13,38 +13,32 @@
           <ul class="fl sui-tag">
             
             <li class="with-x" v-if="searchParams.categoryName">{{searchParams.categoryName}}<i @click="removeCategoryName">×</i></li>
+           
             <li class="with-x" v-if="searchParams.keyword">{{searchParams.keyword}}<i @click="removeKeyword">×</i></li>
-            
+             <!-- 品牌面包屑 -->
+            <li class="with-x" v-if="searchParams.trademark">{{searchParams.trademark.split(":")[1]}}<i @click="removeTrademark">×</i></li>
+           <!-- 品牌属性面包屑 -->
+            <li class="with-x" v-for="(attrValue,index) in searchParams.props">{{attrValue.split(":")[1]}}<i @click="removeAttrValue(index)">×</i></li>
+
          
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector />
+        <SearchSelector @trademarkInfo="trademarkInfo" @attrInfo="attrInfo"/>
 
         <!--details-->
         <div class="details clearfix">
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li :class="{active : isOne()}" @click="changeOrder('1')">
+                  <a>综合<span class="iconfont"  :class="{'icon-down':isDesc()&&isOne(),'icon-up':isAsc()&&isOne()}" ></span></a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
+                <li :class="{active : isTwo()}" @click="changeOrder('2')">
+                  <a>价格<span class="iconfont" :class="{'icon-down':isDesc()&&isTwo(),'icon-up':isAsc()&&isTwo()}"></span></a>
                 </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
-                </li>
+                
               </ul>
             </div>
           </div>
@@ -53,7 +47,9 @@
               <li class="yui3-u-1-5" v-for="(good,index) in goodsList" :key="good.id">
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank"><img :src="good.defaultImg" /></a>
+                    <router-link :to="`/detail/${good.id}`">
+                    <img :src="good.defaultImg" />
+                    </router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -77,35 +73,8 @@
               
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <!-- 分页器 -->
+          <Pagination :pageNo="searchParams.pageNo" :pageSize="searchParams.pageSize" :total="total" :continues="5" @getPageNo="getPageNo"/>
         </div>
       </div>
     </div>
@@ -127,7 +96,7 @@ import { mapGetters } from 'vuex'
           "category3Id": "",
           "categoryName": "",
           "keyword": "",
-          "order": "",
+          "order":"1:desc",
           "pageNo": 1,
           "pageSize": 3,
           "props": [],
@@ -159,21 +128,79 @@ import { mapGetters } from 'vuex'
         this.getData()
         this.$bus.$emit("clear")
         this.$router.push({name:'search',query:this.$route.query})
+      },
+      //品牌
+      trademarkInfo(trademark){
+          this.searchParams.trademark=`${trademark.tmId}:${trademark.tmName}`
+          this.getData()
+        
+      },
+      removeTrademark(){
+        this.searchParams.trademark=undefined
+        this.getData()
+      },
+      //品牌属性
+      attrInfo(attr,attrValue){
+        let props=`${attr.attrId}:${attrValue}:${attr.attrName}`
+      if(this.searchParams.props.indexOf(props)==-1) this.searchParams.props.push(props)
+        
+        
+        this.getData()
+      },
+      removeAttrValue(index){
+        this.searchParams.props.splice
+        this.getData()
+      },
+      //判断active样式在价格or综合
+      isOne(){
+
+        return this.searchParams.order.indexOf('1')!=-1
+        
+      },
+      isTwo(){
+        
+        return this.searchParams.order.indexOf('2')!=-1
+      },
+      isDesc(){
+        return this.searchParams.order.indexOf('desc')!=-1
+      },
+      isAsc(){
+        return this.searchParams.order.indexOf('asc')!=-1
+      },
+      changeOrder(flag){
+        //先保存原始状态
+        let originOrder=this.searchParams.order
+        let originFlag=originOrder.split(':')[0]
+        let originSort=originOrder.split(':')[1]
+
+        let newOrder=''
+        if(flag==originFlag){
+          newOrder=`${originFlag}:${originSort=="desc"?"asc":"desc"}`
+        }else{
+          newOrder=`${flag}:${"desc"}`
+        }
+        this.searchParams.order=newOrder
+        this.getData()
+      },
+      getPageNo(pageNo){
+        this.searchParams.pageNo=pageNo
+        this.getData()
       }
     },
     mounted() {
+      
       this.getData()
       
     },
     computed:{
-      ...mapGetters("search",["goodsList"])
+      ...mapGetters("search",["goodsList","total","pageNo","pageSize"])
     },
     watch:{
       //路由发生变化 则重新请求数据
       $route(newValue,oldValue){
         
         Object.assign(this.searchParams,this.$route.query,this.$route.params)
-        console.log(this.searchParams);
+       
         this.getData()
         this.searchParams.category1Id=""
         this.searchParams.category2Id=""
@@ -516,4 +543,6 @@ import { mapGetters } from 'vuex'
       }
     }
   }
+  
+
 </style>

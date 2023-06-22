@@ -10,7 +10,7 @@ const mutations={
 const actions={
     async getSearchList({commit},params={}){
         let result=await reqGetSearchInfo(params)
-       
+        
         if(result.code==200){
         commit("SEARCHLIST",result.data)
         }
@@ -26,6 +26,11 @@ const getters={
     trademarkList(state){
         return state.searchList.trademarkList||[]
     },
+    total(state){
+        return state.searchList.total||''
+    },
+
+
 
 };
 

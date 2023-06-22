@@ -6,6 +6,8 @@ import router  from './router'
 //全局组件
 import TypeNav from '@/components/TypeNav'
 Vue.component(TypeNav.name,TypeNav)
+import Pagination from '@/components/Pagination'
+Vue.component(Pagination.name,Pagination)
 Vue.config.productionTip = false
 
 //unitTest
@@ -13,7 +15,8 @@ Vue.config.productionTip = false
 // reqCategoryList();
 // import {reqGetSearchInfo} from '@/api'
 // reqGetSearchInfo({})
-
+// import {reqGoodsInfo} from '@/api'
+// console.log(reqGoodsInfo(13));
 
 //引入store
 import store from './store'
