@@ -6,7 +6,7 @@ const state={
    token:getToken(),
 }
 const actions={
-    //获取验证码
+    //获取验证码 1
     async getLoginCode({commit},phone){
         
         let result = await reqLoginCode(phone)
@@ -22,8 +22,8 @@ const actions={
     async getCodeLogin({commit},data){
         let result=await reqCodeLogin(data)
         if(result.code==200){
-            commit("TOKEN",result.data)
-            setToken(result.data)
+            // commit("TOKEN",result.data)
+            // setToken(result.data)
             return 'ok'
         }else{
             return Promise.reject(new Error("登录失败"))
@@ -39,7 +39,8 @@ const actions={
         }else{
             return Promise.reject(new Error("登录失败"))
         }
-    }
+    },
+    
 }
 const mutations={
     GETLOGINCODE(state,loginCode){

@@ -1,8 +1,9 @@
 import axios from "axios"
-import store from "@/store";
 //引入进度条
 import nProgress from "nprogress";
 import 'nprogress/nprogress.css'
+import {getUUID} from '@/utils/uuid_token'
+import {getToken} from '@/utils/token'
 //axios实例
 const requests = axios.create({
     baseURL:'/',
@@ -13,14 +14,18 @@ const requests = axios.create({
 requests.interceptors.request.use(config=>{
     // //请求条
     // nProgress.start();
-    // //携带uuid 游客身份
-    // if(store.state.detail.uuid_token){
-    //     config.headers.userTempId=store.state.detail.uuid_token
-    // }
+    //携带uuid 游客身份
+
+        // config.headers.uid=getUUID()
+    
    
-    //携带token
-    if(store.state.user.token){
-        config.headers.token=store.state.user.token
+    // 携带token
+    // if(store.state.user.token){
+    //     config.headers.Authorization=store.state.user.token
+    // }
+    const token=getToken()
+    if(token){
+        config.headers.Authorization=token
     }
   
  

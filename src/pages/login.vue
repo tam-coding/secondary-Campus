@@ -1,6 +1,6 @@
 <template>
     <div class="loginDivClass">
-      <el-card shadow="always" style="top:50px;margin: 0 auto;width: 29%;min-height: 650px;position: relative;">
+      <el-card shadow="always" style="top:70px;margin: 0 auto;width: 29%;min-height: 650px;position: relative;">
         <div style="text-align:center;margin-top: 30px;">
           <img src="../assets/loginLogo.jpg" alt="logoImg" style="max-width: 120px;">
           <h3 style="font-weight: 400;margin-top: 20px;">登录</h3>
@@ -29,27 +29,31 @@
 </template>
 
 <script>
-  
+  import {setToken} from '@/utils/token'
+  import {setUserInfo} from '@/utils/userInfo'
     export default {
         name: "login",
         data() {
           return {
-            inputPhone:this.$route.query.phone||'',
-            inputPassword:"",
+            inputPhone:this.$route.query.phone||'',//输入的手机号
+            inputPassword:"",//输入的密码
+
           }
         },
         methods: {
-           login(){
-            this.$store.dispatch("user/getPasswordLogin",{ phone: this.inputPhone,password: this.inputPassword,})
-            .then(()=>{
-              //跳转到主页 待完善
-              console.log(1);
-
-            })
-            .catch((error)=>{
-              alert("登录失败",error.message)
-            })
+          async login(){
+            let result=await this.$API.reqLoginByPassword({ phone: this.inputPhone,password: this.inputPassword})
+            console.log(result);
+            if(result.code==200){
+              setToken(result.data.token)
+              setUserInfo(result.data.userDto)
+              this.$bus.$emit('isLogin',true)
+              this.$router.replace('/home')
+            }else{
+              this.$message({type:'error',message:result.message})
+            }
           }
+         
         },
     }
 </script>

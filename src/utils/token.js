@@ -1,9 +1,10 @@
+
 export const setToken=(token)=>{
-    localStorage.setItem("TOKEN",token)
+   localStorage.setItem("Authorization",token)
 }
 export const getToken=()=>{
-   return localStorage.getItem("TOKEN")
+   return localStorage.getItem("Authorization")
 }
 export const removeToken=()=>{
-   localStorage.removeItem("TOKEN")
+   localStorage.removeItem("Authorization")
 }

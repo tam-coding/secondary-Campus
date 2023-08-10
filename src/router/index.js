@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from  'vue-router'
 import routes from './routes.js'
 import store from '@/store'
+import { getToken } from '@/utils/token.js'
+import { getUserInfo } from '@/utils/userInfo.js'
 Vue.use(VueRouter)
 
 
@@ -33,47 +35,49 @@ let router=new VueRouter({
       }
 })
 
-// router.beforeEach((to,from,next)=>{
-//     let token=store.state.user.token
-//     let name=store.state.user.userInfo.name
-//     //用户是否登陆了
-//     if(token){
-//         //登录了不能再跳转登录
-//         if(to.path=='/login'){
-//             next('/home')
-//         }else{
-//             //登录了，且不是跳转到注册页面
-//             //如果用户信息存在
-//             if(name){
+
+router.beforeEach((to,from,next)=>{
+    let token=getToken()
+    // let name=getUserInfo.username
+    //用户是否登陆了
+    if(token){
+      next()
+        //登录了不能再跳转登录
+        // if(to.path=='/login'){
+        //     next('/home')
+        // }else{
+        //     //登录了，且不是跳转到注册页面
+        //     //如果用户信息存在
+        //     if(name){
                 
-//                 next()
-//             }else{
-//                     //用户信息没有，让仓库存储用户信息再跳转
-//                      store.dispatch("user/getUserInfo").then(()=>{
+        //         next()
+        //     }else{
+        //             //用户信息没有，让仓库存储用户信息再跳转
+        //              store.dispatch("user/getUserInfo").then(()=>{
                         
-//                         next()
-//                      }).catch(()=>{
-//                         //token有效期过了！！！！！需要重新登录，获取新的token
-//                         store.dispatch("user/userLogout").catch(()=>{
-//                             alert("退出登录失败")
-//                         })
-//                         next('/login')
-//                      })
+        //                 next()
+        //              }).catch(()=>{
+        //                 //token有效期过了！！！！！需要重新登录，获取新的token
+        //                 store.dispatch("user/userLogout").catch(()=>{
+        //                     alert("退出登录失败")
+        //                 })
+        //                 next('/login')
+        //              })
                     
                
-//             }
-//         }
-//     }else{
-//         //未登录
-//         //2、未登录，首页或者登录页可以正常访问
-//         if(to.path === '/login' || to.path === '/home' || to.path==='/register')
-//             next()
-//         else{
-//             alert('请先登录')
-//             next('/login')
-//         }
+        //     }
+        // }
+    }else{
+        //未登录
+        //2、未登录，(首页|| to.path === '/home') 或者登录页可以正常访问
+        if(to.path === '/login' || to.path==='/register')
+            next()
+        else{
+            alert('请先登录')
+            next('/login')
+        }
 
-//     }
-// })
+    }
+})
 
 export default router
