@@ -1,13 +1,14 @@
 <template>
   <div class="index-body">
     <!-- 所有商品  slot="header" class="clearfix"-->
-    <p class="index-body-p-1" >所有商品</p>
-   <div style="border-top: 3px solid #ccc;"></div>
+    <p class="index-body-p-1" ><span style="background-color: #ff9900;padding:5px 5px 2px 5px;border-radius:8px;margin-left:3px;margin-bottom:8px">闲置</span> :</p>
+   <!-- <div style="border-top: 3px solid #ccc;"></div> -->
   <!-- <el-tabs v-model="activeName" @tab-click="handleClick" style="padding-left:25px;margin-top:20px">
     <el-tab-pane :label="goodsSort.name" :name="goodsSort.name" v-for="(goodsSort,index) in goodsSortList" :key="goodsSort.id"></el-tab-pane>
 
   </el-tabs> -->
-
+  <el-card style="margin-top:20px">
+    
 <el-row :gutter="50"  style="padding-top:30px;margin:0 auto">
 
   <el-col :span="8" v-for="(page,index) in pageList" :key="page.id" >
@@ -43,16 +44,7 @@
 
 
 
-<!-- pagination @size-change="handleSizeChange"-->
-<el-pagination
-  background
-  :page-size="limit"
-  @current-change="handleCurrentChange"
-  :current-page="page"
-  style="text-align:center;margin-top:10px"
-  layout="prev, pager, next, total,jumper"
-  :total="total">
-</el-pagination>
+
 
 
 
@@ -113,6 +105,18 @@
   
 
 </el-dialog>
+
+  </el-card>
+<!-- pagination @size-change="handleSizeChange"-->
+<el-pagination
+  background
+  :page-size="limit"
+  @current-change="handleCurrentChange"
+  :current-page="page"
+  style="text-align:center;margin-top:20px"
+  layout="prev, pager, next, total,jumper"
+  :total="total">
+</el-pagination>
   </div>
 </template>
 
@@ -159,7 +163,7 @@ export default {
           })
         }
       },
-      async handleCurrentChange(pager=1){
+       handleCurrentChange(pager=1){
         this.page=pager
 
         this.getData()
@@ -200,8 +204,10 @@ export default {
     margin: 0 auto;
   }
   .index-body-p-1{
+    text-align: center;
     font-weight: bold;
-    font-size: 30px;
+    font-family:  "Helvetica Neue" ;
+    font-size: 35px;
     color: black;
     padding-top:80px;
   }

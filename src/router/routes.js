@@ -2,6 +2,11 @@
 
 export default [
     {
+       
+        path:'/postdetail/:postid',
+        component:()=>import('@/pages/postDetail.vue')
+    },
+    {
         path:'/postlist',
         component:()=>import('@/pages/postList.vue'),
         // meta:{show:true}
