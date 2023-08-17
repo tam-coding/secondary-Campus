@@ -1,0 +1,17 @@
+messageRecords=[
+    {
+        noReplyNum:0,//还没有查看消息数量
+        selfUid:'', //自己的uid
+        otherUid:'', //对方的uid，这里可以作为是否已存在聊天记录的依据
+        messageList:[
+            {
+                senderUid:'', //有可能是自己的uid，也有可能是对方的uid，这里主要是为了渲染聊天框的时候区分左边还是右边
+                message:'',
+            },
+            {
+                senderUid:'',
+                message:'',
+            }
+        ]
+    }
+]
