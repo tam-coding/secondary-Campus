@@ -24,7 +24,7 @@ Vue.prototype.$API=API
 new Vue({
   render: h => h(App),
   router,
-  store,
+
   //安装全局事件总线
   beforeCreate(){
     Vue.prototype.$bus=this
