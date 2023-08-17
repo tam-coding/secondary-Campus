@@ -24,7 +24,7 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### 首页：
-![输入图片说明](image.png)
+![输入图片说明](image/image.png)
 ### 个人信息展示、修改
 ![输入图片说明](image111.png)
 ### 论坛
