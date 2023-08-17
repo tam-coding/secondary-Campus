@@ -1,4 +1,5 @@
 //uid储存在localstorage里，每次生成之前先判断里面有没有记录
+//使用手机号作为uid了
 export const getUID=()=>{
     let uid=localStorage.getItem('UID')
     if(!uid){

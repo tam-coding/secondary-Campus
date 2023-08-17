@@ -10,11 +10,10 @@
 <script>
 
 import Header from './components/header.vue'
-
+import {getToken} from '@/utils/token'
 export default {
   name: 'App',
   components: {
-
     Header
   },
  

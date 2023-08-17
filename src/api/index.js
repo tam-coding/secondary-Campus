@@ -54,3 +54,24 @@ export const reqCheckLike=(postId)=>requests({url:`/web/postLike/check/${postId}
 
 //设置点赞
 export const reqSetLike=(postId)=>requests({url:`/web/postLike/${postId}`,method:"get"})
+
+//添加post
+export const reqAddPost=(postReq)=>requests({url:`/web/post/save`,data:postReq,method:"post"})
+
+//检查是否是好友了
+export const reqCheckFriend=(tid)=>requests({url:`/web/user-friend/check/${tid}`,method:"get"})
+
+//申请添加好友
+export const reqAddFriend=(tid)=>requests({url:`/web/user-friend/add/${tid}`,method:"get"})
+
+//获取添加请求列表
+export const reqGetAddList=()=>requests({url:`/web/user-friend/getAddList`,method:"get"})
+
+//同意好友请求
+export const reqAgreeFriend=(tid)=>requests({url:`/web/user-friend/agree/${tid}`,method:"get"})
+
+//获取添加的人的信息
+export const reqAddRequesterInfo=(id)=>requests({url:`/web/user/uid/${id}`,method:"get"})
+
+//获取好友列表
+export const reqGetFriendList=()=>requests({url:`/web/user-friend/getUserFriendList`,method:"get"})

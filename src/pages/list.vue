@@ -76,7 +76,7 @@
               <div class="bottom clearfix">
                
                 <el-col style="text-align:center">
-                  <el-button type="primary" >联系卖家</el-button>
+                  <el-button type="primary"  @click="showOtherInfo(detailList.webUserDto)" >查看卖家</el-button>
                 </el-col>
                 
               </div>
@@ -87,10 +87,7 @@
 </span>
 
  
-  <!-- <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-  </span> -->
+ 
 </el-dialog>
 
 <!-- otherInfo-dialog :before-close="handleClose"-->
@@ -101,7 +98,9 @@
   >
    <div class="block" style="text-align:center"><el-avatar :size="150" :src="otherUserInfo.icon"></el-avatar></div>
   <div style="text-align:center;font-weight:bold;font-size:30px;margin-top:10px">{{otherUserInfo.username}}</div>
-  <div style="margin-top:40px;text-align:center"><el-button type="primary" @click="contract" style="width: 60%;">联系ta</el-button></div>
+  <div style="margin-top:40px;text-align:center" v-if="contractOrAdd==0"><el-button type="primary" @click="contract(otherUserInfo.uid)" style="width: 60%;">联系同学</el-button></div>
+  <div style="margin-top:40px;text-align:center" v-else-if="contractOrAdd==1"><el-button type="primary" @click="addFriend(otherUserInfo.uid)" style="width: 60%;">添加同学</el-button></div>
+  <div style="margin-top:40px;text-align:center" v-else>这是自己哦！</el-button></div>
   
 
 </el-dialog>
@@ -134,6 +133,7 @@ export default {
              total:0,//总页数
              pageList:[], //商品数据列表
              otherUserInfo:{},//其它人的信息
+             contractOrAdd:1,//0 显示联系按钮 1显示添加按钮 2自己 不显示按钮
             //  goodsSortList:[],//商品分类列表
             //  activeName:'',//商品分类的默认选中哪个
         }
@@ -173,14 +173,39 @@ export default {
         this.dialogVisible = true
         this.detailList=list
       },
-      showOtherInfo(otherUserInfo){
+      async showOtherInfo(otherUserInfo){
+        let result=await this.$API.reqCheckFriend(otherUserInfo.uid)
+        if(result.code!=200){
+          this.contractOrAdd=1
+          if(result.message=="请求添加自己失败！"){
+            this.contractOrAdd=2
+          }
+          
+        }else{
+          this.contractOrAdd=0
+        }
         this.otherUserInfo=otherUserInfo
+        this.dialogVisible=false
         this.dialogVisible1=true
       },
       //联系其他人
-      contract(){
+        contract(uid){
+            this.$bus.$emit('chatElsePage',uid)
+            this.$router.push('/message')
+         },
+      //添加好友
+      async addFriend(uid){
+        let result = await this.$API.reqAddFriend(uid)
+        console.log(result);
+        if(result.code==200){
+         this.$message({message:"已发送请求",type:'success'})
+        }
+        else if(result.code==400&&result.message=='重复请求！'){
+          this.$message({message:"已发送请求",type:'success'})
+        }
+      }
 
-      },
+
       //tab分类栏
       // async handleClick(tab, event) {
       //   const goodsSort=this.goodsSortList.filter(item=>item.name==this.activeName)

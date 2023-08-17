@@ -84,6 +84,8 @@ import {getUID} from '@/utils/uid'
           if(result.code==200){
             this.$message('注册成功')
             this.$router.replace('/login')
+          }else{
+            this.$message(result.message)
           }
           //   if(emailRegex.test(this.inputEmail)){
           // await this.$store.dispatch("user/getCodeLogin",{phone: this.inputPhone,code:this.loginCode,email:this.inputEmail,password:this.inputPassword})

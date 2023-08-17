@@ -3,6 +3,9 @@
     <p class="index-body-p-1" >&nbsp;&nbsp;<span style="background-color: skyblue;padding:5px 5px 2px 5px;border-radius:8px;margin-left:3px;margin-bottom:8px">论&nbsp;&nbsp;坛</span> :</p>
    <!-- <div style="border-top: 3px solid #ccc;"></div> -->
   <el-card style="margin-top:20px">
+        <div style="text-align:right">
+          <el-button type="primary" class="el-icon-circle-plus" @click="addPost"> 添加Post</el-button>
+        </div>
         <div class="post">
           <el-card v-for="(post,index) in postList" :key="post.id" style="margin:25px 56px;width:40%">
           <div class="post-section">
@@ -121,6 +124,10 @@ export default {
       //   post.clickLike=!post.clickLike
       //   let result =await this.$API.setLike(post.id)
       // },
+      // 添加post
+      addPost(){
+        this.$router.push('/addpost')
+      }
 
     }
 }

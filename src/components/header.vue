@@ -9,17 +9,18 @@
         <el-col :span="10" :offset="5">
           <el-row>
             <el-col :span="3" :offset="1" class="index-header-bar-span">
-              <a href="/">首页</a>
+              <a href="/"><i class="el-icon-bicycle"></i> 首页</a>
             </el-col>
 
 
+
             <el-col v-if="!isLogin"  :span="3" :offset="1" class="index-header-bar-span">
-              <a href="#"  >登录/注册</a>
+              <a href="#" >登录/注册</a>
               <ul class="dropdown-menu my-dropdown-menu-1">
                 <li>
 <!--                  <a href="#" class="my-dropdown-menu-li-1">登录</a>-->
                   <!-- <a class="my-dropdown-menu-li-1" @click="checkLogin1">登录</a> -->
-                  <router-link class="my-dropdown-menu-li-1" to="/login">登录</router-link>
+                  <router-link class="my-dropdown-menu-li-1" to="/login"> 登录</router-link>
                 </li>
                 <li>
 <!--                  <a href="#" class="my-dropdown-menu-li-1">注册</a>-->
@@ -30,34 +31,32 @@
             </el-col>
             
             <el-col v-else :span="3" :offset="1" class="index-header-bar-span">
-             <a class="my-dropdown-menu-li-1" @click="logout">退出登录</a>
+             <a class="my-dropdown-menu-li-1" @click="logout"><i class="el-icon-unlock"></i> 退出登录</a>
+             
             </el-col>
             
 
 
             <el-col :span="3" :offset="1" class="index-header-bar-span">
               <!-- <img src="../assets/shopcar.png" alt="" style="width: 20px;"> -->
-              <router-link to="shopCar"><i class="el-icon-shopping-cart-full "></i> 购物车</router-link>
+              <a href="#" @click="clickMessage"><el-badge :is-dot="isdot" class="item" style="vertical-align:middle"><i class="el-icon-message-solid"></i> 消息</el-badge></a>
             </el-col>
             <el-col :span="3" :offset="1" class="index-header-bar-span">
-                <router-link to="/add">个人闲置</router-link>
+                <router-link to="/addGoods"><i class="el-icon-orange"></i> 上架闲置</router-link>
             </el-col>
             <el-col :span="3" :offset="1" class="index-header-bar-span">
-              <a href="#"   >个人中心</a>
-              <ul class="dropdown-menu my-dropdown-menu-1" >
+              <a href="#"  @click="showUserInfo"  > <i class="el-icon-user-solid"></i>  个人信息</a>
+              <!-- <ul class="dropdown-menu my-dropdown-menu-1" >
                 <li>
-                  <!-- @click="checkLogin4" -->
-                  <a class="my-dropdown-menu-li-1"  @click="showUserInfo">个人信息</a>
+                  <a class="my-dropdown-menu-li-1"  @click="showUserInfo" > </a>
                 </li>
                 <li>
-                  <!-- @click="checkLogin3" -->
                   <a class="my-dropdown-menu-li-1" >已购订单</a>
                 </li>
                 <li>
-                  <!-- @click="checkLogin5" -->
                   <a class="my-dropdown-menu-li-1" >个人闲置</a>
                 </li>
-              </ul>
+              </ul> -->
             </el-col>
 
             
@@ -151,6 +150,8 @@
     //import { mapGetters } from 'vuex'
     import {getToken,removeToken} from '@/utils/token'
     import {getUserInfo,removeUserInfo} from '@/utils/userInfo'
+    import {setMessage,getMessage,increaseNoReplyNum} from '@/utils/message'
+    
     export default {
       name: "Header",
       data(){
@@ -162,25 +163,32 @@
           password:"",
           uploadData:{fileUseId:null}, //上传头像携带参数
           avatarUrl:'', //用户头像的url
-          // activeIndex: '1',
-          // centerDialogVisible: false,
-          // dialogValue:"",
-          // name:window.sessionStorage.getItem("name")
+           socket: null,//websoket对象
+           isdotAdd:false,//控制header的消息小红点 有没有好友添加的消息
+           isdotMassage:false,//控制header的消息小红点 有没有消息
+       
         }
       },
       created(){
         this.$bus.$on('isLogin',(isLogin)=>{
           console.log("我登陆啦！");
           this.isLogin=isLogin
-          // this.userInfo=getUserInfo()
+          
       })
       },
     mounted(){
       this.isLogin=getToken()?true:false
-      //请求头携带token
-    
+      this.connectWebSocket()
+       this.getAddList()
+       this.userInfo=getUserInfo()
       
-      
+       
+    },
+    computed:{
+      isdot(){
+        console.log('isdot变化');
+        return this.isdotAdd||this.isdotMassage
+      }
     },
  
     methods:{
@@ -190,7 +198,7 @@
         this.isLogin=false
         this.userInfo={}
         this.$router.replace('/login')
-        this.$message({message:'已退出登录！', offset:50})
+        this.$message({message:'已退出登录！', offset:50,duration:1000})
       },
       // 显示抽屉
       showUserInfo(){
@@ -246,7 +254,61 @@
         }
       
      }
-      }
+      },
+       connectWebSocket() {
+            const token=getToken()
+            // 创建WebSocket连接
+
+            // 不要 8080 ，直接使用服务器端口 80
+            this.socket = new WebSocket(`ws://localhost/websocket/chat?token=${token}`);
+            //暴露全局soket
+            this.$bus.socket=this.socket 
+            // 在连接打开时触发的事件
+            this.socket.onopen = () => { console.log("Connected to server"); };
+
+
+            // 在接收到消息时触发的事件
+            this.socket.onmessage = (event) => {
+                // 对方发过来的消息
+                // const message = event.data;
+                // console.log("我是header中的onmessage");
+                // console.log(message)
+                // uid：对方的 uid
+                // msg：对方的消息
+                // 下面是对方不在线返回的消息，同样是使用逗号分隔uid和msg
+                // 1234,对方当前不在线，您的消息将暂时保留
+                // const [uid, msg] = message.split(",");
+                // console.log(uid)
+                // console.log(msg)
+                 const [otherUid, message] = event.data.split(",");
+                 if(message!="对方当前不在线，您的消息将暂时保留"){
+                    setMessage(this.userInfo.uid,otherUid,{senderUid:otherUid,message:message})
+                    increaseNoReplyNum(this.userInfo.uid,otherUid)
+                    console.log('我是header中的onmessage,我要去储存'+message);
+                    this.isdotMassage=true
+                 }
+
+            };
+            //连接关闭的时触发的事件
+            this.socket.onclose=(event)=>{
+              console.log('websocket 关闭了');
+              console.log(event.data);
+            }
+        },
+        //获取申请添加好友列表
+        async getAddList(){
+            let result =await this.$API.reqGetAddList()
+            console.log(result);
+            if(result.code==200&&result.data.length>0){
+                this.isdotAdd=result.data.length>0?true:false
+            }
+        },
+        //点击消息事件回调
+        clickMessage(){
+          this.isdotMassage=false
+          this.$router.push('/message')
+        }
+        
     }
 
     }

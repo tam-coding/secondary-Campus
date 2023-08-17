@@ -12,7 +12,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 Vue.prototype.$alert = ElementUI.MessageBox.alert;
 //引入store
-import store from './store'
+// import store from './store'
  //引入mock
  import  '@/mock/mockServe'
 
@@ -28,6 +28,6 @@ new Vue({
   //安装全局事件总线
   beforeCreate(){
     Vue.prototype.$bus=this
-
+    this.$bus.isdot=0
   }
 }).$mount('#app')

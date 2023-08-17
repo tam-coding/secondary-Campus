@@ -2,7 +2,14 @@
 
 export default [
     {
-       
+        path:'/message',
+        component:()=>import('@/pages/message.vue')
+    },
+    {
+        path:'/addpost',
+        component:()=>import('@/pages/addPost.vue')
+    },
+    {
         path:'/postdetail/:postid',
         component:()=>import('@/pages/postDetail.vue')
     },
@@ -12,7 +19,7 @@ export default [
         // meta:{show:true}
     },
     {
-        path:'/add',
+        path:'/addGoods',
         component:()=>import('@/pages/addGoods.vue'),
         // meta:{show:true}
     },

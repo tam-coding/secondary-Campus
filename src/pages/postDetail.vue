@@ -14,7 +14,7 @@
         </el-card>
         <div class="userInfo" style="padding-left:5px">
             <el-card>
-                <div class="block">
+                <div class="block" @click="showOtherInfo(postDetail.webUserDto)" style="cursor:pointer">
                     <el-avatar shape="square" :size="150" :src="postDetail.webUserDto?.icon"></el-avatar>
                     <div style="font-weight:bold;fonst-size:18px;text-align:center;margin-top:10px">发布人:{{postDetail.webUserDto?.username}}</div>
                 </div>
@@ -72,6 +72,17 @@
             
         
     </el-card>
+    <el-dialog
+    :visible.sync="dialogVisible1"
+    width="30%"
+    >
+    <div class="block" style="text-align:center"><el-avatar :size="150" :src="otherUserInfo.icon"></el-avatar></div>
+    <div style="text-align:center;font-weight:bold;font-size:30px;margin-top:10px">{{otherUserInfo.username}}</div>
+    <div style="margin-top:40px;text-align:center" v-if="contractOrAdd==0"><el-button type="primary" @click="contract(otherUserInfo.uid)" style="width: 60%;">联系同学</el-button></div>
+    <div style="margin-top:40px;text-align:center" v-else-if="contractOrAdd==1"><el-button type="primary" @click="addFriend(otherUserInfo.uid)" style="width: 60%;">添加同学</el-button></div>
+    <div style="margin-top:40px;text-align:center" v-else>这是自己哦！</el-button></div>
+</el-dialog>
+
   </div>
 </template>
 
@@ -85,6 +96,9 @@ export default {
             topComment:{},//顶层评论
             inputComment:'',//用户输入的顶层评论
             isShowTopInputComment:true,//顶层评论输入框显示隐藏
+            contractOrAdd:1,//0 显示联系按钮 1显示添加按钮 2自己 不显示按钮
+            dialogVisible1:false,//其他人信息的dialog
+            otherUserInfo:{},//其它人的信息,也有可能是自己
         }
     },
     created(){
@@ -194,6 +208,37 @@ export default {
             comment.InputSubComment=''
             this.showSubComment(comment)
             comment.isShowSubComment=!comment.isShowSubComment
+        },
+        //显示发布人信息框
+        async showOtherInfo(otherUserInfo){
+            let result=await this.$API.reqCheckFriend(otherUserInfo.uid)
+            if(result.code!=200){
+            this.contractOrAdd=1
+            if(result.message=="请求添加自己失败！"){
+                this.contractOrAdd=2
+            }
+            
+            }else{
+            this.contractOrAdd=0
+            }
+            this.otherUserInfo=otherUserInfo
+            this.dialogVisible=false
+            this.dialogVisible1=true
+        },
+         contract(uid){
+            this.$bus.$emit('chatElsePage',uid)
+            this.$router.push('/message')
+         },
+        //添加好友
+        async addFriend(uid){
+            let result = await this.$API.reqAddFriend(uid)
+            console.log(result);
+            if(result.code==200){
+            this.$message({message:"已发送请求",type:'success'})
+            }
+            else if(result.code==400&&result.message=='重复请求！'){
+            this.$message({message:"已发送请求",type:'success'})
+            }
         }
     }
 }
